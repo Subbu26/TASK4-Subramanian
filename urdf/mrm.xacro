@@ -1,0 +1,744 @@
+<?xml version="1.0" ?>
+
+<robot name="mrm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- BGN - Include make done  -->
+  <xacro:include filename="$(find mrm_description)/urdf/robot_parameters.xacro" />
+  <xacro:include filename="$(find mrm_description)/urdf/links_joints.xacro" />
+
+  <xacro:macro name="default_inertial" params="mass">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+  </xacro:macro>  <!-- END - Include -->
+  
+  <!-- BGN - Robot description -->
+  <m_link_cylinder name="${link_00_name}" 
+              origin_rpy="0 0 0" origin_xyz="0 0 2"
+              mass="10240"
+              ixx="1700.667" ixy="0" ixz="0"
+              iyy="1700.667" iyz="0"
+              izz="1700.667"
+              length="4" radius="0.5" />
+
+              
+  <m_joint name="${link_00_name}__${link_01_name}" type="revolute"
+           axis_xyz="0 0 1"
+           origin_rpy="-1.57 0 0" origin_xyz="0 0.5 3.5"
+           parent="${link_00_name}" child="${link_01_name}"
+           limit_e="10000000" limit_l="-3.14" limit_u="3.14" limit_v="2.5" />
+           
+  
+  <m_link_cylinder name="${link_01_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 0.2"
+              mass="15"
+              ixx="13.235" ixy="0" ixz="0"
+              iyy="13.235" iyz="0"
+              izz="9.655"
+              length="0.4" radius="0.2" />
+  
+
+
+  <m_joint name="${link_01_name}__${link_02_name}" type="revolute"
+           axis_xyz="1 0 0"
+           origin_rpy="-1.57 0 0" origin_xyz="0 0 0.4"
+           parent="link_01" child="link_02"
+           limit_e="5000" limit_l="-1.57" limit_u="1.57" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_02_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 0.4"
+              mass="9.0"
+              ixx="6.0" ixy="0" ixz="0"
+              iyy="6.0" iyz="0"
+              izz="0.6521"
+              radius="0.15" length="0.8" />
+              
+  <m_joint name="${link_02_name}__${link_03_name}" type="revolute"
+           axis_xyz="0 1 0"
+           origin_rpy="0 0 0" origin_xyz="0 0 0.8"
+           parent="link_02" child="link_03"
+           limit_e="5000" limit_l="-1.57" limit_u="1.57" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_03_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 0.4"
+              mass="5.0"
+              ixx="1.0" ixy="0" ixz="0"
+              iyy="1.0" iyz="0"
+              izz="0.0651"
+              radius="0.12" length="0.8" />
+              
+  <m_joint name="${link_03_name}__${link_04_name}" type="revolute"
+           axis_xyz="0 1 0"
+           origin_rpy="0 0 0" origin_xyz="0 0 0.8"
+           parent="link_03" child="link_04"
+           limit_e="5000" limit_l="-1.57" limit_u="1.57" limit_v="2.5" />  
+           
+  <m_link_cylinder name="${link_04_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 0.4"
+              mass="1.0"
+              ixx="0.63" ixy="0" ixz="0"
+              iyy="0.63" iyz="0"
+              izz="0.0651"
+              radius="0.08" length="0.8" />
+              
+  <m_joint name="${link_04_name}__${link_05_name}" type="revolute"
+           axis_xyz="0 1 0"
+           origin_rpy="0 0 0" origin_xyz="0 0 0.8"
+           parent="link_04" child="link_05"
+           limit_e="5000" limit_l="-3.14" limit_u="3.14" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_05_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 0.125"
+              mass="0.5"
+              ixx="0.25" ixy="0" ixz="0"
+              iyy="0.25" iyz="0"
+              izz="0.0564"
+              radius="0.05" length="0.25" />
+
+  <!-- adding leftgripper here -->
+
+  <!-- <joint name="top_left_gripper_joint" type="revolute">
+    <axis xyz="0 0 1" />
+    <limit effort="10.0" lower="0.0" upper="1.57" velocity="2.5" />
+    <origin rpy="0 0 3.14" xyz="0.0 0.0 0.25" />
+    <parent link="${link_05_name}" />
+    <child link="top_left_gripper" />
+  </joint>
+
+  <link name="top_left_gripper">
+    <visual>
+      <origin rpy="0.0 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger.dae" scale="${scale_value} ${scale_value} ${scale_value} "/>
+      </geometry>
+    </visual>
+    <xacro:default_inertial mass="0.05"/>
+
+  </link>
+  <transmission name="top_left_gripper_joint_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="top_left_gripper_joint_gripper_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </actuator>
+    <joint name="top_left_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <joint name="top_left_tip_joint" type="fixed">
+    <parent link="top_left_gripper" />
+    <child link="top_left_tip" />
+  </joint>
+
+  <link name="top_left_tip">
+    <visual>
+      <origin rpy="0.0 0 0" xyz="0.09137 0.00495 0" />
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger_tip.dae" scale="${scale_value} ${scale_value} ${scale_value} " />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="down_left_gripper_joint" type="revolute">
+    <axis xyz="0 0 -1" />
+    <limit effort="10.0" lower="0.0" upper="1.57" velocity="2.5" />
+    <origin rpy="0 0 3.14" xyz="0.0 0.0 0.25" />
+    <parent link="${link_05_name}" />
+    <child link="down_left_gripper" />
+  </joint>
+
+  <link name="down_left_gripper">
+    <visual>
+      <origin rpy="-3.1415 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger.dae" scale="${scale_value} ${scale_value} ${scale_value} " />
+      </geometry>
+    </visual>
+    <xacro:default_inertial mass="0.05"/>
+  </link>
+
+  <transmission name="down_left_gripper_joint_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="down_left_gripper_joint_gripper_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+    <joint name="down_left_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <joint name="down_left_tip_joint" type="fixed">
+    <parent link="down_left_gripper" />
+    <child link="down_left_tip" />
+  </joint>
+
+  <link name="down_left_tip">
+    <visual>
+      <origin rpy="-3.1415 0 0" xyz="0.09137 0.00495 0" />
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger_tip.dae" scale="${scale_value} ${scale_value} ${scale_value} "/>
+      </geometry>
+    </visual>
+  </link>
+  
+-->
+
+
+<joint name="gripper_extension" type="prismatic">
+  <parent link="${link_05_name}"/>
+  <child link="gripper_pole"/>
+  <limit effort="1000.0" lower="-${width*2-.02}" upper="0" velocity="0.5"/>
+  <origin rpy="0 0 3.14" xyz="${width-0.25} 0 0.2"/>
+  <limit effort="30" velocity="0.2"/>
+  <dynamics damping="0.0" friction="0.0"/>
+</joint>
+
+<link name="gripper_pole">
+  <visual>
+    <geometry>
+      <cylinder length="${polelen}" radius="0.01"/>
+    </geometry>
+    <origin xyz="${polelen/2} 0 0" rpy="0 ${pi/2} 0 "/>
+  </visual>
+  <collision>
+    <geometry>
+      <cylinder length="${polelen}" radius="0.01"/>
+    </geometry>
+    <origin xyz="${polelen/2} 0 0" rpy="0 ${pi/2} 0 "/>
+  </collision>
+  <xacro:default_inertial mass="0.05"/>
+</link>
+
+<transmission name="gripper_extension_trans" type="SimpleTransmission">
+  <type>transmission_interface/SimpleTransmission</type>
+  <actuator name="gripper_extension_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+  <joint name="gripper_extension">
+    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+  </joint>
+</transmission>
+
+<xacro:macro name="gripper" params="prefix reflect">
+  <joint name="${prefix}_gripper_joint" type="revolute">
+    <axis xyz="0 0 ${reflect}"/>
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="${polelen} ${reflect*0.01} 0"/>
+    <parent link="gripper_pole"/>
+    <child link="${prefix}_gripper"/>
+    <limit effort="30" velocity="1.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="${prefix}_gripper">
+    <visual>
+      <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger.dae" scale="${scale_value} ${scale_value} ${scale_value} " />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger.dae" scale="${scale_value} ${scale_value} ${scale_value} "/>
+      </geometry>
+      <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0 0 0"/>
+    </collision>
+    <xacro:default_inertial mass="0.05"/>
+  </link>
+  <transmission name="${prefix}_gripper_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="${prefix}_gripper_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="${prefix}_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <joint name="${prefix}_tip_joint" type="fixed">
+    <parent link="${prefix}_gripper"/>
+    <child link="${prefix}_tip"/>
+  </joint>
+  <link name="${prefix}_tip">
+    <visual>
+      <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0.09137 0.00495 0"/>
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger_tip.dae" scale="${scale_value} ${scale_value} ${scale_value} "/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/l_finger_tip.dae" scale="${scale_value} ${scale_value} ${scale_value} "/>
+      </geometry>
+      <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0.09137 0.00495 0"/>
+    </collision>
+    <xacro:default_inertial mass="0.05"/>
+  </link>
+</xacro:macro>
+
+<xacro:gripper prefix="left" reflect="1" />
+<xacro:gripper prefix="right" reflect="-1" />
+
+
+
+<m_joint name="${link_00_name}__${link_11_name}" type="revolute"
+           axis_xyz="0 0 1"
+           origin_rpy="-1.57 0 0" origin_xyz="0 -0.5 3.5"
+           parent="${link_00_name}" child="${link_11_name}"
+           limit_e="10000000" limit_l="-3.14" limit_u="3.14" limit_v="2.5" />
+           
+  
+  <m_link_cylinder name="${link_11_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 -0.2"
+              mass="15.0"
+              ixx="13.235" ixy="0" ixz="0"
+              iyy="13.235" iyz="0"
+              izz="9.655"
+              length="0.4" radius="0.2" />
+
+<m_joint name="${link_11_name}__${link_12_name}" type="revolute"
+           axis_xyz="0 1 0"
+           origin_rpy="1.57 0 0" origin_xyz="0 0 -0.4"
+           parent="${link_11_name}" child="${link_12_name}"
+           limit_e="5000" limit_l="-1.57" limit_u="0" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_12_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 -0.4"
+              mass="9.0"
+              ixx="6.0" ixy="0" ixz="0"
+              iyy="6.0" iyz="0"
+              izz="0.651"
+              radius="0.15" length="0.8" /> 
+
+<m_joint name="${link_12_name}__${link_13_name}" type="revolute"
+           axis_xyz="1 0 0"
+           origin_rpy="0 0 0" origin_xyz="0 0 -0.8"
+           parent="${link_12_name}" child="${link_13_name}"
+           limit_e="5000" limit_l="0" limit_u="1.57" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_13_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 -0.4"
+              mass="5.0"
+              ixx="1.0" ixy="0" ixz="0"
+              iyy="1.0" iyz="0"
+              izz="0.0651"
+              radius="0.12" length="0.8" />
+              
+  <m_joint name="${link_13_name}__${link_14_name}" type="revolute"
+           axis_xyz="1 0 0"
+           origin_rpy="0 0 0" origin_xyz="0 0 -0.8"
+           parent="${link_13_name}" child="${link_14_name}"
+           limit_e="5000" limit_l="-1.57" limit_u="0" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_14_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 -0.4"
+              mass="1.0"
+              ixx="0.63" ixy="0" ixz="0"
+              iyy="0.63" iyz="0"
+              izz="0.0651"
+              radius="0.08" length="0.8" />
+              
+  <m_joint name="${link_14_name}__${link_15_name}" type="revolute"
+           axis_xyz="0 1 0"
+           origin_rpy="0 0 0" origin_xyz="0 0 -0.8"
+           parent="${link_14_name}" child="${link_15_name}"
+           limit_e="5000" limit_l="-3.14" limit_u="3.14" limit_v="2.5" />
+           
+  <m_link_cylinder name="${link_15_name}"
+              origin_rpy="0 0 0" origin_xyz="0 0 -0.125"
+              mass="0.5"
+              ixx="0.25" ixy="0" ixz="0"
+              iyy="0.25" iyz="0"
+              izz="0.0564"
+              radius="0.05" length="0.25" />
+
+    <!-- adding basket -->
+  <joint name="basket_joint" type="fixed">
+    <axis xyz="0 0 1" />
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="2.5" />
+    <origin rpy="0.0 -3.14 0.0" xyz="0.8 -0.3 0" />
+    <parent link="${link_15_name}" />
+    <child link="basket_link" />
+  </joint>
+
+  <link name="basket_link">
+    <visual>
+      <origin rpy="0.0 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://mrm_description/meshes/basket.dae" scale="${basket_scale} ${basket_scale} ${basket_scale} " />
+      </geometry>
+    </visual>
+    <xacro:default_inertial mass="1"/>
+    
+  </link>
+
+  
+
+  <!-- adding wheels -->
+
+  <link name="left_leg">
+    <visual>
+      <geometry>
+        <box size="0.6 0.1 0.2"/>
+      </geometry>
+      <origin rpy="0 1.57075 0" xyz="0 0 -0.3"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.6 0.1 0.2"/>
+      </geometry>
+      <origin rpy="0 1.57075 0" xyz="0 0 -0.3"/>
+    </collision>
+    <inertial>
+      <mass value="10"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="base_to_left_leg" type="fixed">
+    <parent link="base_link"/>
+    <child link="left_leg"/>
+    <origin xyz="0 0.55 0.55"/>
+  </joint>
+
+  <link name="left_base">
+    <visual>
+      <geometry>
+        <box size="0.8 0.1 0.1"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.8 0.1 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="10"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="left_base_joint" type="fixed">
+    <parent link="left_leg"/>
+    <child link="left_base"/>
+    <origin xyz="0 0 -0.6"/>
+  </joint>
+
+    <link name="left_front_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="left_front_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="left_base"/>
+    <child link="left_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0.133333333333 0 -0.085"/>
+  </joint>
+
+  <link name="left_back_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="left_back_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="left_base"/>
+    <child link="left_back_wheel"/>
+    <origin rpy="0 0 0" xyz="-0.133333333333 0 -0.085"/>
+  </joint>
+
+<!--right leg  -->
+
+
+<link name="right_leg">
+  <visual>
+    <geometry>
+      <box size="0.6 0.1 0.2"/>
+    </geometry>
+    <origin rpy="0 1.57075 0" xyz="0 0 -0.3"/>
+    <material name="white"/>
+  </visual>
+  <collision>
+    <geometry>
+      <box size="0.6 0.1 0.2"/>
+    </geometry>
+    <origin rpy="0 1.57075 0" xyz="0 0 -0.3"/>
+  </collision>
+  <inertial>
+    <mass value="10"/>
+    <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+  </inertial>
+</link>
+<joint name="base_to_right_leg" type="fixed">
+  <parent link="base_link"/>
+  <child link="right_leg"/>
+  <origin xyz="0 -0.55 0.55"/>
+</joint>
+
+<link name="right_base">
+  <visual>
+    <geometry>
+      <box size="0.8 0.1 0.1"/>
+    </geometry>
+    <material name="white"/>
+  </visual>
+  <collision>
+    <geometry>
+      <box size="0.8 0.1 0.1"/>
+    </geometry>
+  </collision>
+  <inertial>
+    <mass value="10"/>
+    <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+  </inertial>
+</link>
+
+<joint name="right_base_joint" type="fixed">
+  <parent link="right_leg"/>
+  <child link="right_base"/>
+  <origin xyz="0 0 -0.6"/>
+</joint>
+
+<link name="right_front_wheel">
+  <visual>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+      <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+    <material name="black"/>
+  </visual>
+  <collision>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+      <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+  </collision>
+  <inertial>
+    <mass value="1"/>
+    <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+  </inertial>
+</link>
+
+<joint name="right_front_wheel_joint" type="continuous">
+  <axis rpy="0 0 0" xyz="0 1 0"/>
+  <parent link="right_base"/>
+  <child link="right_front_wheel"/>
+  <origin rpy="0 0 0" xyz="0.133333333333 0 -0.085"/>
+</joint>
+
+<link name="right_back_wheel">
+  <visual>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+      <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+    <material name="black"/>
+  </visual>
+  <collision>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+      <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+  </collision>
+  <inertial>
+    <mass value="1"/>
+    <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+  </inertial>
+</link>
+
+<joint name="right_back_wheel_joint" type="continuous">
+  <axis rpy="0 0 0" xyz="0 1 0"/>
+  <parent link="right_base"/>
+  <child link="right_back_wheel"/>
+  <origin rpy="0 0 0" xyz="-0.133333333333 0 -0.085"/>
+</joint>
+
+
+<!-- addding camera -->
+
+<joint name="camera_joint" type="fixed">
+  <axis xyz="0 0 0" />
+  <origin xyz="0 0 4.2" rpy="0.0 0.0 0.0"/>
+  <parent link="base_link"/>
+  <child link="camera_link"/>
+</joint>
+
+<!-- Camera -->
+<link name="camera_link">
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://mrm_description/meshes/kinect.dae" scale="${scale_value} ${scale_value} ${scale_value} " />
+    </geometry>
+  </collision>
+
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://mrm_description/meshes/kinect.dae" scale="${scale_value} ${scale_value} ${scale_value} " />
+    </geometry>
+    <!-- <material name="red"/> -->
+  </visual>
+
+  <inertial>
+    <mass value="1e-5" />
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+  </inertial>
+</link>
+
+
+<!-- <gazebo reference="camera_link">
+  <material>${cam_color}</material>
+  <mu1>0.2</mu1>
+  <mu2>0.2</mu2>
+  <selfCollide>true</selfCollide>
+</gazebo> -->
+
+
+
+  <!-- END - Robot description -->
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"></plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometryRate>20.0</odometryRate>
+      <robotBaseFrame>base_link</robotBaseFrame>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="farming_wheel" filename="libgazebo_ros_planar_move.so">
+        <commandTopic>cmd_vel</commandTopic>
+        <odometryTopic>odom</odometryTopic>
+        <odometryFrame>odom</odometryFrame>
+        <odometryRate>50.0</odometryRate>
+        <robotBaseFrame>base_link</robotBaseFrame>
+        <publishTF>false</publishTF>
+    </plugin>
+</gazebo>
+
+
+
+<!-- <gazebo reference="camera_link">
+  <sensor type="camera" name="camera1">
+    <update_rate>30.0</update_rate>
+    <camera name="kinetic_camera">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>farming_robot/camera</cameraName>
+      <imageTopicName>farming_robot/image_raw</imageTopicName>
+      <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+      <frameName>camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+</gazebo> -->
+
+
+<gazebo reference="camera_link">
+  <sensor name="camera_link_camera" type="depth">
+    <update_rate>20</update_rate>
+    <camera>
+      <!-- <horizontal_fov>1.047198</horizontal_fov> -->
+      <horizontal_fov>2.0</horizontal_fov>
+      <image>
+        <width>640</width>
+        <height>480</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.05</near>
+        <far>6</far>
+      </clip>
+    </camera>
+    <plugin name="camera_link_controller" filename="libgazebo_ros_openni_kinect.so">
+      <baseline>0.2</baseline>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1.0</updateRate>
+      <cameraName>${camera_name}_ir</cameraName>
+      <imageTopicName>/${camera_name}/color/image_raw</imageTopicName>
+      <cameraInfoTopicName>/${camera_name}/color/camera_info</cameraInfoTopicName>
+      <depthImageTopicName>/${camera_name}/depth/image_raw</depthImageTopicName>
+      <depthImageInfoTopicName>/${camera_name}/depth/camera_info</depthImageInfoTopicName>
+      <pointCloudTopicName>/${camera_name}/depth/points</pointCloudTopicName>
+      <frameName>${frame_name}</frameName>
+      <pointCloudCutoff>0.5</pointCloudCutoff>
+      <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+      <distortionK1>0.00000001</distortionK1>
+      <distortionK2>0.00000001</distortionK2>
+      <distortionK3>0.00000001</distortionK3>
+      <distortionT1>0.00000001</distortionT1>
+      <distortionT2>0.00000001</distortionT2>
+      <CxPrime>0</CxPrime>
+      <Cx>0</Cx>
+      <Cy>0</Cy>
+      <focalLength>0</focalLength>
+      <hackBaseline>0</hackBaseline>
+    </plugin>
+  </sensor>
+</gazebo>
+</robot>
